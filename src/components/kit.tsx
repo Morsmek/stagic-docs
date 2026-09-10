@@ -38,12 +38,12 @@ export function DropZone({
       }}
       onClick={() => inputRef.current?.click()}
       className={`rule cursor-pointer flex flex-col items-center justify-center gap-2 py-10 px-4 text-center transition-colors ${
-        over ? 'bg-[#16130e] text-[#f4f1ea]' : 'hover:bg-black/5'
+        over ? 't-hover' : 't-subtle-hover'
       }`}
     >
       <Upload className="w-5 h-5" strokeWidth={1.5} />
       <p className="micro-label">{hint}</p>
-      <p className="text-xs opacity-50">Drop {multiple ? 'files' : 'a file'} here or click to browse — processed locally, never uploaded</p>
+      <p className="text-xs t-muted">Drop {multiple ? 'files' : 'a file'} here or click to browse — processed locally, never uploaded</p>
       <input
         ref={inputRef}
         type="file"
@@ -62,17 +62,17 @@ export function DropZone({
 export function FileList({ files, onRemove }: { files: File[]; onRemove?: (i: number) => void }) {
   if (!files.length) return null
   return (
-    <div className="rule divide-y divide-[#16130e]">
+    <div className="rule t-divide">
       {files.map((f, i) => (
         <div key={i} className="flex items-center justify-between px-3 py-2 text-sm">
           <span className="truncate">
-            <span className="font-mono2 tnum text-xs opacity-40 mr-2">{String(i + 1).padStart(2, '0')}</span>
+            <span className="font-body2 tnum text-xs t-muted mr-2">{String(i + 1).padStart(2, '0')}</span>
             {f.name}
           </span>
           <span className="flex items-center gap-3 shrink-0 ml-3">
-            <span className="font-mono2 tnum text-xs opacity-50">{formatBytes(f.size)}</span>
+            <span className="font-body2 tnum text-xs t-muted">{formatBytes(f.size)}</span>
             {onRemove && (
-              <button onClick={() => onRemove(i)} className="micro-label hover:text-[#ff4d00]">
+              <button onClick={() => onRemove(i)} className="micro-label t-accent-hover">
                 ✕
               </button>
             )}
@@ -98,7 +98,18 @@ export function RunButton({
     <button
       onClick={onClick}
       disabled={disabled || busy}
-      className="micro-label rule px-6 py-3 bg-[#16130e] text-[#f4f1ea] hover:bg-[#ff4d00] hover:text-[#16130e] disabled:opacity-30 disabled:hover:bg-[#16130e] disabled:hover:text-[#f4f1ea] transition-colors w-full"
+      className="micro-label rule px-6 py-3 t-btn disabled:opacity-30 transition-colors w-full"
+      style={{ background: 'var(--btn-bg)', color: 'var(--btn-fg)' }}
+      onMouseEnter={(e) => {
+        if (!e.currentTarget.disabled) {
+          e.currentTarget.style.background = 'var(--accent)'
+          e.currentTarget.style.color = 'var(--accent-fg)'
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'var(--btn-bg)'
+        e.currentTarget.style.color = 'var(--btn-fg)'
+      }}
     >
       {busy ? 'WORKING…' : label}
     </button>
@@ -110,8 +121,8 @@ export function StatusLine({ log }: { log: string[] }) {
   return (
     <div className="rule-t pt-3 space-y-1">
       {log.map((l, i) => (
-        <p key={i} className="font-mono2 text-xs tnum">
-          <span className="text-[#ff4d00]">▸</span> {l}
+        <p key={i} className="font-body2 text-xs tnum">
+          <span className="t-accent">▸</span> {l}
         </p>
       ))}
     </div>
@@ -121,11 +132,10 @@ export function StatusLine({ log }: { log: string[] }) {
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="micro-label opacity-60 block mb-1">{label}</span>
+      <span className="micro-label t-muted block mb-1">{label}</span>
       {children}
     </label>
   )
 }
 
-export const inputCls =
-  'w-full rule bg-transparent px-3 py-2 text-sm font-mono2 outline-none focus:bg-[#ff4d00]/10 placeholder:text-black/30'
+export const inputCls = 'w-full rule bg-transparent px-3 py-2 text-sm font-body2 outline-none t-accent-focus placeholder:opacity-40'
