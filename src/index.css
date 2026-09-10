@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f4f1ea;
+  --ink: #16130e;
+  --accent: #ff4d00;
+}
+
+@layer base {
+  html {
+    font-size: 15px;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Space Grotesk', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  * {
+    border-color: var(--ink);
+  }
+}
+
+@layer utilities {
+  .font-mono2 {
+    font-family: 'Space Mono', 'Courier New', monospace;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .micro-label {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10.5px;
+  }
+  .rule-b { border-bottom: 1px solid var(--ink); }
+  .rule-t { border-top: 1px solid var(--ink); }
+  .rule-l { border-left: 1px solid var(--ink); }
+  .rule-r { border-right: 1px solid var(--ink); }
+  .rule { border: 1px solid var(--ink); }
+}
