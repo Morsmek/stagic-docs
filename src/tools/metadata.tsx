@@ -64,23 +64,23 @@ export function PdfMetadata() {
     <div className="space-y-4">
       <DropZone accept="application/pdf" hint="Drop one PDF to inspect" onFiles={(f) => load(f[0])} />
       {file && (
-        <p className="font-mono2 text-xs tnum opacity-60">
+        <p className="font-body2 text-xs tnum opacity-60">
           {file.name} · {formatBytes(file.size)} · {pages} pages
         </p>
       )}
       {meta && (
-        <div className="rule divide-y divide-[#16130e]">
+        <div className="rule divide-y t-divide">
           {META_KEYS.map(({ key, label, editable }) => (
             <div key={key} className="grid grid-cols-[140px_1fr] items-center">
               <span className="micro-label px-3 py-2 opacity-60 rule-r">{label}</span>
               {editable ? (
                 <input
-                  className="px-3 py-2 bg-transparent text-sm font-mono2 outline-none focus:bg-[#ff4d00]/10"
+                  className="px-3 py-2 bg-transparent text-sm font-body2 outline-none t-accent-focus"
                   value={meta[key]}
                   onChange={(e) => setMeta({ ...meta, [key]: e.target.value })}
                 />
               ) : (
-                <span className="px-3 py-2 text-sm font-mono2 tnum opacity-60">{meta[key] || '—'}</span>
+                <span className="px-3 py-2 text-sm font-body2 tnum opacity-60">{meta[key] || '—'}</span>
               )}
             </div>
           ))}
@@ -89,7 +89,7 @@ export function PdfMetadata() {
       {meta && (
         <div className="grid grid-cols-2 gap-4">
           <RunButton onClick={save} busy={busy} label="Save edited metadata" />
-          <button onClick={scrub} disabled={busy} className="micro-label rule px-6 py-3 hover:bg-[#ff4d00] transition-colors">
+          <button onClick={scrub} disabled={busy} className="micro-label rule px-6 py-3 t-accent-fill transition-colors">
             Scrub all metadata
           </button>
         </div>
@@ -117,16 +117,16 @@ export function ExifViewer() {
     <div className="space-y-4">
       <DropZone accept="image/jpeg,image/jpg,image/png,image/webp" hint="Drop an image to inspect EXIF" onFiles={(f) => load(f[0])} />
       {file && (
-        <p className="font-mono2 text-xs tnum opacity-60">
+        <p className="font-body2 text-xs tnum opacity-60">
           {file.name} · {formatBytes(file.size)} · {file.type}
         </p>
       )}
       {entries && entries.length > 0 && (
-        <div className="rule divide-y divide-[#16130e] max-h-96 overflow-auto">
+        <div className="rule divide-y t-divide max-h-96 overflow-auto">
           {entries.map((e, i) => (
             <div key={i} className="grid grid-cols-[220px_1fr] text-sm">
               <span className="micro-label px-3 py-2 opacity-60 rule-r">{e.tag}</span>
-              <span className="px-3 py-2 font-mono2 text-xs break-all">{e.value}</span>
+              <span className="px-3 py-2 font-body2 text-xs break-all">{e.value}</span>
             </div>
           ))}
         </div>

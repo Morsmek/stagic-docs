@@ -42,7 +42,7 @@ ${result.value}
       <FileList files={file ? [file] : []} onRemove={() => { setFile(null); setHtml('') }} />
       <RunButton onClick={run} disabled={!file} busy={busy} label="Convert to HTML" />
       {html && (
-        <div className="rule max-h-80 overflow-auto p-4 bg-white/50">
+        <div className="rule max-h-80 overflow-auto p-4 t-panel">
           <p className="micro-label opacity-50 mb-2">Preview</p>
           <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
         </div>
@@ -82,7 +82,7 @@ export function TextMdToPdf() {
         }}
       />
       <Field label="Document title">
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" className="w-full rule bg-transparent px-3 py-2 text-sm font-mono2 outline-none focus:bg-[#ff4d00]/10" />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" className="w-full rule bg-transparent px-3 py-2 text-sm font-body2 outline-none t-accent-focus" />
       </Field>
       <Field label="Content (# headings and **bold** are typeset)">
         <textarea
@@ -90,7 +90,7 @@ export function TextMdToPdf() {
           onChange={(e) => setText(e.target.value)}
           rows={10}
           placeholder={'# Report title\n\nWrite or paste text here…'}
-          className="w-full rule bg-transparent px-3 py-2 text-sm font-mono2 outline-none focus:bg-[#ff4d00]/10 resize-y"
+          className="w-full rule bg-transparent px-3 py-2 text-sm font-body2 outline-none t-accent-focus resize-y"
         />
       </Field>
       <RunButton onClick={run} disabled={!text.trim()} busy={busy} label="Typeset as PDF" />
@@ -134,12 +134,12 @@ export function ImageConvert() {
       <DropZone accept="image/*" multiple hint="Drop images to convert" onFiles={(f) => setFiles((p) => [...p, ...f])} />
       <FileList files={files} onRemove={(i) => setFiles((p) => p.filter((_, j) => j !== i))} />
       <Field label="Target format">
-        <div className="grid grid-cols-3 rule divide-x divide-[#16130e]">
+        <div className="grid grid-cols-3 rule divide-x">
           {TARGETS.map((t) => (
             <button
               key={t.value}
               onClick={() => setTarget(t.value)}
-              className={`micro-label py-2.5 transition-colors ${target === t.value ? 'bg-[#16130e] text-[#f4f1ea]' : 'hover:bg-[#ff4d00]/15'}`}
+              className={`micro-label py-2.5 transition-colors ${target === t.value ? 't-active' : 't-accent-tint'}`}
             >
               {t.label}
             </button>

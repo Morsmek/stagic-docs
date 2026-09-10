@@ -39,10 +39,10 @@ export function CompressPdf() {
       <FileList files={file ? [file] : []} onRemove={() => setFile(null)} />
       <div className="grid grid-cols-2 gap-4">
         <Field label={`JPEG quality — ${Math.round(quality * 100)}%`}>
-          <input type="range" min={0.4} max={0.9} step={0.05} value={quality} onChange={(e) => setQuality(+e.target.value)} className="w-full accent-[#ff4d00]" />
+          <input type="range" min={0.4} max={0.9} step={0.05} value={quality} onChange={(e) => setQuality(+e.target.value)} className="w-full t-range" />
         </Field>
         <Field label={`Render resolution — ${scale}x`}>
-          <input type="range" min={1} max={2} step={0.25} value={scale} onChange={(e) => setScale(+e.target.value)} className="w-full accent-[#ff4d00]" />
+          <input type="range" min={1} max={2} step={0.25} value={scale} onChange={(e) => setScale(+e.target.value)} className="w-full t-range" />
         </Field>
       </div>
       <RunButton onClick={run} disabled={!file} busy={busy} label="Compress PDF" />
@@ -83,7 +83,7 @@ export function PdfToImages() {
       <DropZone accept="application/pdf" hint="Drop one PDF" onFiles={(f) => setFile(f[0])} />
       <FileList files={file ? [file] : []} onRemove={() => setFile(null)} />
       <Field label={`Resolution — ${scale}x`}>
-        <input type="range" min={1} max={3} step={0.5} value={scale} onChange={(e) => setScale(+e.target.value)} className="w-full accent-[#ff4d00]" />
+        <input type="range" min={1} max={3} step={0.5} value={scale} onChange={(e) => setScale(+e.target.value)} className="w-full t-range" />
       </Field>
       <RunButton onClick={run} disabled={!file} busy={busy} label="Render to PNG" />
       <StatusLine log={log} />
