@@ -4,6 +4,16 @@ Every document chore. Zero uploads.
 
 A client-side document toolkit inspired by [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) — but rebuilt as a pure browser app so there is **no server to run, no file ever leaves the device, and hosting is free on Cloudflare Pages**.
 
+## Three designs in one
+
+The app ships with three complete, switchable design systems (floating switcher, bottom-center):
+
+- **01 Console** — dark terminal/IDE aesthetic: all-monospace, hairline grid, aqua accent, tools invoked like shell commands
+- **02 Press** — bold product energy: saturated yellow canvas, flat black/white blocks, oversized grotesk type
+- **03 Studio** — refined editorial: warm gray, deep navy ink, serif display, numbered index list
+
+The tool engine is theme-agnostic (CSS custom properties), so adding a fourth skin is a few variables and one shell component.
+
 ## Tools (12)
 
 **PDF**
