@@ -3,7 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stagic Docs</title>
+    <meta name="theme-color" content="#f5f5f7" />
+    <meta
+      name="description"n      content="Every document chore. Zero uploads. Merge, split, compress, convert, and scrub metadata entirely in your browser."
+    />
+    <title>Documender</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("stagic-theme");
+          var d =
+            t === "dark" ||
+            (t !== "light" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (d) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

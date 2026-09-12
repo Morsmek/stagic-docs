@@ -1,20 +1,10 @@
-# Stagic Docs
+# Documender
 
 Every document chore. Zero uploads.
 
-A client-side document toolkit inspired by [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) — but rebuilt as a pure browser app so there is **no server to run, no file ever leaves the device, and hosting is free on Cloudflare Pages**.
+A privacy-first, on-device document toolkit — merge, split, compress, convert, and scrub metadata entirely in your browser. Nothing is uploaded. A part of [Stagic](https://stagic.pl).
 
-## Three designs in one
-
-The app ships with three complete, switchable design systems (floating switcher, bottom-center):
-
-- **01 Console** — dark terminal/IDE aesthetic: all-monospace, hairline grid, aqua accent, tools invoked like shell commands
-- **02 Press** — bold product energy: saturated yellow canvas, flat black/white blocks, oversized grotesk type
-- **03 Studio** — refined editorial: warm gray, deep navy ink, serif display, numbered index list
-
-The tool engine is theme-agnostic (CSS custom properties), so adding a fourth skin is a few variables and one shell component.
-
-## Tools (12)
+## Tools
 
 **PDF**
 - Merge PDF — combine multiple PDFs in order
@@ -36,7 +26,7 @@ The tool engine is theme-agnostic (CSS custom properties), so adding a fourth sk
 
 ## Stack
 
-React 19 · TypeScript · Vite · Tailwind CSS, on open-source libraries:
+React 19 · TypeScript · Vite · Tailwind CSS v4, on open-source libraries:
 [pdf-lib](https://github.com/Hopding/pdf-lib), [PDF.js](https://github.com/mozilla/pdf.js), [Mammoth](https://github.com/mwilliamson/mammoth.js), [piexifjs](https://github.com/hMatoba/piexifjs), [JSZip](https://github.com/Stuk/jszip).
 
 ## Develop
@@ -54,28 +44,15 @@ npm run build   # outputs static site to dist/
 
 ## Deploy to Cloudflare Pages
 
-Two options:
-
-**A. Git integration (recommended)**
-1. In the Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git
+1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git
 2. Select this repository
-3. Build settings: Framework preset `Vite` (or: build command `npm run build`, output directory `dist`)
+3. Build command `npm run build`, output directory `dist`
 4. Deploy — every push to `main` auto-deploys
-
-**B. Wrangler CLI**
-```bash
-npm run build
-npx wrangler pages deploy dist --project-name stagic-docs
-```
 
 ## Why client-side?
 
-Stirling-PDF is a Java/Spring server — powerful, but it needs a JVM host. This project covers the most-used document operations with browser-native libraries, which means:
-
-- Privacy by architecture (files never leave the device)
-- No server costs, no scaling concerns
-- Free global hosting on any static CDN
+Files never leave the device. No server costs, no accounts, free hosting on any static CDN.
 
 ## License
 
-MIT for the Stagic Docs code. The bundled open-source libraries carry their own licenses (MIT/Apache-2.0). Note: Stirling-PDF itself is GPL — this project shares no code with it, it is a clean-room re-implementation of the same idea for the browser.
+MIT for the Documender code. Bundled open-source libraries carry their own licenses (MIT/Apache-2.0).
