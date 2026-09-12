@@ -12,16 +12,9 @@ export function SiteFooter() {
           className="inline-flex min-h-11 items-center gap-2.5 text-sm text-muted-foreground transition-opacity duration-150 hover:opacity-80"
         >
           <span>A part of</span>
-          <img
-            src="/brand/stagic-light.png"
-            alt="Stagic"
-            className="h-6 w-auto dark:hidden"
-          />
-          <img
-            src="/brand/stagic-dark.png"
-            alt=""
-            className="hidden h-6 w-auto dark:block"
-          />
+          <span className="text-[15px] font-semibold tracking-[-0.03em] text-foreground">
+            stagic
+          </span>
         </a>
       </div>
     </footer>
