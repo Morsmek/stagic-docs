@@ -12,6 +12,12 @@ import {
   FileCode2,
   Type,
   RefreshCw,
+  LayoutGrid,
+  Stamp,
+  Hash,
+  Files,
+  AlignLeft,
+  Scaling,
 } from "lucide-react";
 
 export type ToolGroup = "PDF" | "Privacy" | "Convert";
@@ -25,6 +31,7 @@ export interface ToolDef {
   accept: string;
   multiple: boolean;
   icon: LucideIcon;
+  tags: string[];
   match: (file: File) => boolean;
 }
 
@@ -58,6 +65,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: true,
     icon: Layers,
+    tags: ["combine", "join", "append", "concatenate"],
     match: isPdf,
   },
   {
@@ -69,6 +77,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: false,
     icon: Scissors,
+    tags: ["extract", "pages", "range", "cut"],
     match: isPdf,
   },
   {
@@ -80,6 +89,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: false,
     icon: RotateCw,
+    tags: ["turn", "orientation", "landscape", "portrait"],
     match: isPdf,
   },
   {
@@ -91,6 +101,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: false,
     icon: Minimize2,
+    tags: ["shrink", "smaller", "optimize", "size"],
     match: isPdf,
   },
   {
@@ -102,6 +113,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: false,
     icon: ImageIcon,
+    tags: ["render", "image", "export", "screenshot"],
     match: isPdf,
   },
   {
@@ -113,6 +125,7 @@ export const TOOLS: ToolDef[] = [
     accept: "image/*,.png,.jpg,.jpeg,.webp",
     multiple: true,
     icon: Images,
+    tags: ["photos", "scans", "combine", "album"],
     match: isImage,
   },
   {
@@ -124,6 +137,7 @@ export const TOOLS: ToolDef[] = [
     accept: "application/pdf,.pdf",
     multiple: false,
     icon: FileText,
+    tags: ["exif", "author", "title", "clean", "privacy"],
     match: isPdf,
   },
   {
@@ -135,6 +149,7 @@ export const TOOLS: ToolDef[] = [
     accept: "image/jpeg,image/jpg,image/png,image/webp,.jpg,.jpeg,.png,.webp",
     multiple: false,
     icon: Camera,
+    tags: ["gps", "location", "camera", "photo", "metadata"],
     match: isJpeg,
   },
   {
@@ -146,6 +161,7 @@ export const TOOLS: ToolDef[] = [
     accept: "image/*,.png,.jpg,.jpeg,.webp",
     multiple: true,
     icon: Eraser,
+    tags: ["gps", "remove", "privacy", "clean", "anonymize"],
     match: isImage,
   },
   {
@@ -158,6 +174,7 @@ export const TOOLS: ToolDef[] = [
       ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     multiple: false,
     icon: FileCode2,
+    tags: ["word", "web", "markup", "export"],
     match: isDocx,
   },
   {
@@ -169,6 +186,7 @@ export const TOOLS: ToolDef[] = [
     accept: ".txt,.md,text/plain,text/markdown",
     multiple: false,
     icon: Type,
+    tags: ["markdown", "txt", "typeset", "write", "document"],
     match: isText,
   },
   {
@@ -180,11 +198,90 @@ export const TOOLS: ToolDef[] = [
     accept: "image/*,.png,.jpg,.jpeg,.webp",
     multiple: true,
     icon: RefreshCw,
+    tags: ["png", "jpeg", "webp", "format", "batch"],
+    match: isImage,
+  },
+  {
+    id: "organize",
+    name: "Organize Pages",
+    desc: "Reorder, rotate, duplicate, and delete pages with live thumbnails.",
+    group: "PDF",
+    hint: "Drop one PDF to organize",
+    accept: "application/pdf,.pdf",
+    multiple: false,
+    icon: LayoutGrid,
+    tags: ["reorder", "sort", "delete", "duplicate", "pages", "arrange"],
+    match: isPdf,
+  },
+  {
+    id: "watermark",
+    name: "Watermark",
+    desc: "Stamp text across a page — single, diagonal, or tiled.",
+    group: "PDF",
+    hint: "Drop one PDF to watermark",
+    accept: "application/pdf,.pdf",
+    multiple: false,
+    icon: Stamp,
+    tags: ["stamp", "brand", "draft", "confidential", "overlay"],
+    match: isPdf,
+  },
+  {
+    id: "pagenums",
+    name: "Page Numbers",
+    desc: "Add page numbers with your choice of position and format.",
+    group: "PDF",
+    hint: "Drop one PDF",
+    accept: "application/pdf,.pdf",
+    multiple: false,
+    icon: Hash,
+    tags: ["numbering", "footer", "header", "pagination"],
+    match: isPdf,
+  },
+  {
+    id: "burst",
+    name: "Split Every Page",
+    desc: "Explode a PDF into one file per page, bundled as a ZIP.",
+    group: "PDF",
+    hint: "Drop one PDF",
+    accept: "application/pdf,.pdf",
+    multiple: false,
+    icon: Files,
+    tags: ["burst", "explode", "separate", "individual", "zip"],
+    match: isPdf,
+  },
+  {
+    id: "pdf2txt",
+    name: "PDF to Text",
+    desc: "Extract selectable text from every page, copy or save as .txt.",
+    group: "Convert",
+    hint: "Drop one PDF",
+    accept: "application/pdf,.pdf",
+    multiple: false,
+    icon: AlignLeft,
+    tags: ["extract", "copy", "text", "ocr", "content"],
+    match: isPdf,
+  },
+  {
+    id: "imgsize",
+    name: "Image Resizer",
+    desc: "Resize and compress images to fit a maximum width and height.",
+    group: "Convert",
+    hint: "Drop images to resize",
+    accept: "image/*,.png,.jpg,.jpeg,.webp",
+    multiple: true,
+    icon: Scaling,
+    tags: ["resize", "scale", "shrink", "compress", "dimensions"],
     match: isImage,
   },
 ];
 
 export const GROUPS: ToolGroup[] = ["PDF", "Privacy", "Convert"];
+
+export const GROUP_BLURBS: Record<ToolGroup, string> = {
+  PDF: "Assemble, reshape, and shrink documents.",
+  Privacy: "See and strip the data hiding in your files.",
+  Convert: "Move between formats without leaving the browser.",
+};
 
 export function getTool(id: string): ToolDef | undefined {
   return TOOLS.find((t) => t.id === id);
@@ -205,6 +302,7 @@ export function searchTools(query: string): ToolDef[] {
       t.name.toLowerCase().includes(q) ||
       t.desc.toLowerCase().includes(q) ||
       t.group.toLowerCase().includes(q) ||
-      t.id.toLowerCase().includes(q),
+      t.id.toLowerCase().includes(q) ||
+      t.tags.some((tag) => tag.includes(q)),
   );
 }

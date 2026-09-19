@@ -9,8 +9,12 @@ A privacy-first, on-device document toolkit — merge, split, compress, convert,
 **PDF**
 - Merge PDF — combine multiple PDFs in order
 - Split / Extract — pull page ranges (`1-3, 5, 8-`)
+- Organize Pages — drag to reorder, rotate, duplicate, or delete pages with live thumbnails
 - Rotate Pages — 90/180/270°, all or selected pages
 - Compress PDF — raster compression with quality/resolution sliders
+- Watermark — single, diagonal, or tiled text with size, opacity, color, and page ranges
+- Page Numbers — six positions, custom start, and `1`, `1 / 12`, or `Page 1` formats
+- Split Every Page — explode a PDF into one file per page, bundled as a ZIP
 - PDF → PNG — render pages at up to 3x, bundled as ZIP
 - Images → PDF — pack images into a single PDF
 
@@ -22,7 +26,16 @@ A privacy-first, on-device document toolkit — merge, split, compress, convert,
 **Convert**
 - DOCX → HTML — clean, styled HTML with preview
 - Text / Markdown → PDF — lightweight typesetting
+- PDF → Text — extract selectable text from every page, copy or save as `.txt`
 - Image Converter — PNG / JPEG / WebP batch conversion
+- Image Resizer — constrain to a max width/height with quality and format control
+
+## Interface
+
+- **Command palette** — press `Cmd/Ctrl + K` to search tools and actions from anywhere
+- **Favorites & recents** — starred tools and recently used tools are remembered locally
+- **Live progress** — long jobs report page-by-page progress instead of a bare spinner
+- **Drag anywhere** — drop files on the home page to get matched tool suggestions
 
 ## Stack
 

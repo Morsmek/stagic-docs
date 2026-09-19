@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { DropZone } from "@/components/kit/DropZone";
 import { FileList } from "@/components/kit/FileList";
+import { ProgressNote } from "@/components/kit/ProgressNote";
 import { RunBar } from "@/components/kit/RunBar";
 import { StatusNote } from "@/components/kit/StatusNote";
 import { useIncomingFiles } from "@/components/kit/ToolFrame";
@@ -206,13 +207,18 @@ export function ImageScrubber() {
   const [files, setFiles] = useState<File[]>([]);
   const [log, setLog] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+    null,
+  );
   useIncomingFiles(tool.match, (incoming) => setFiles((p) => [...p, ...incoming]));
 
   const run = async () => {
     setBusy(true);
     setLog([]);
+    setProgress({ done: 0, total: files.length });
     const done: string[] = [];
-    for (const f of files) {
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i]!;
       try {
         const blob = await scrubImage(f);
         const ext =
@@ -222,10 +228,12 @@ export function ImageScrubber() {
       } catch (e) {
         done.push(`Error: ${f.name} — ${(e as Error).message}`);
       }
+      setProgress({ done: i + 1, total: files.length });
     }
     setLog(done.concat(["GPS, camera, and timestamps removed by pixel re-encode."]));
     toast.success("Clean photos saved");
     setBusy(false);
+    setProgress(null);
   };
 
   return (
@@ -244,6 +252,7 @@ export function ImageScrubber() {
         files={files}
         onRemove={(i) => setFiles((p) => p.filter((_, j) => j !== i))}
       />
+      {progress && <ProgressNote {...progress} label="Scrubbing photos" />}
       <RunBar
         onClick={run}
         disabled={!files.length}

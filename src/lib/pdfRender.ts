@@ -22,6 +22,39 @@ export interface RenderedPage {
   height: number;
 }
 
+export interface TextPage {
+  page: number;
+  text: string;
+}
+
+interface TextItemLike {
+  str?: string;
+  hasEOL?: boolean;
+}
+
+export async function extractPdfText(
+  file: File,
+  onProgress?: (done: number, total: number) => void,
+): Promise<TextPage[]> {
+  const pdfjs = await loadPdfjs();
+  const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() })
+    .promise;
+  const out: TextPage[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    let text = "";
+    for (const raw of content.items as unknown as TextItemLike[]) {
+      if (typeof raw.str === "string") text += raw.str;
+      if (raw.hasEOL) text += "\n";
+    }
+    out.push({ page: i, text: text.replace(/[ \t]+\n/g, "\n").trimEnd() });
+    onProgress?.(i, doc.numPages);
+  }
+  await (doc as unknown as { destroy?: () => Promise<void> }).destroy?.();
+  return out;
+}
+
 export async function pdfToImages(
   file: File,
   scale: number,

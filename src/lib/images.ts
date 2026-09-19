@@ -66,6 +66,65 @@ export async function scrubImage(file: File): Promise<Blob> {
   );
 }
 
+export interface ResizeOptions {
+  maxWidth: number;
+  maxHeight: number;
+  format: "keep" | "image/png" | "image/jpeg" | "image/webp";
+  quality: number;
+  noUpscale: boolean;
+}
+
+export interface ResizedImage {
+  blob: Blob;
+  width: number;
+  height: number;
+  type: string;
+}
+
+export async function resizeImage(
+  file: File,
+  opts: ResizeOptions,
+): Promise<ResizedImage> {
+  const bitmap = await createImageBitmap(file);
+  const fit = Math.min(
+    opts.maxWidth / bitmap.width,
+    opts.maxHeight / bitmap.height,
+  );
+  const scale = opts.noUpscale ? Math.min(fit, 1) : fit;
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const type =
+    opts.format === "keep"
+      ? file.type === "image/jpeg" ||
+        file.type === "image/png" ||
+        file.type === "image/webp"
+        ? file.type
+        : "image/png"
+      : opts.format;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+  if (type === "image/jpeg") {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+  }
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close?.();
+
+  const blob = await new Promise<Blob>((res, rej) =>
+    canvas.toBlob(
+      (b) => (b ? res(b) : rej(new Error("Encode failed"))),
+      type,
+      opts.quality,
+    ),
+  );
+  return { blob, width, height, type };
+}
+
 export async function convertImage(
   file: File,
   target: "image/png" | "image/jpeg" | "image/webp",

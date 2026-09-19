@@ -1,12 +1,19 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { ToolFrame } from "@/components/kit/ToolFrame";
 import { Button } from "@/components/ui/button";
+import { useRecents } from "@/lib/recent";
 import { getTool } from "@/lib/tools";
 import { RenderTool } from "@/tools/render-tool";
 
 export function ToolPage() {
   const { toolId } = useParams();
   const tool = getTool(toolId ?? "");
+  const markUsed = useRecents((s) => s.markUsed);
+
+  useEffect(() => {
+    if (tool) markUsed(tool.id);
+  }, [tool, markUsed]);
 
   if (!tool) {
     return (

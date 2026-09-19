@@ -1,39 +1,56 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
-  ChevronRight,
+  Clock,
   Lock,
   Search,
   Shield,
   Smartphone,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GROUPS, searchTools, toolsForFiles, type ToolDef } from "@/lib/tools";
+import {
+  GROUPS,
+  GROUP_BLURBS,
+  TOOLS,
+  getTool,
+  toolsForFiles,
+  type ToolDef,
+  type ToolGroup,
+} from "@/lib/tools";
+import { usePalette } from "@/lib/palette";
+import { useRecents } from "@/lib/recent";
 import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/lib/download";
 
+type Filter = ToolGroup | "All";
+
 export function HomePage() {
-  const [query, setQuery] = useState("");
   const [dragging, setDragging] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [filter, setFilter] = useState<Filter>("All");
+  const searchRef = useRef<HTMLButtonElement>(null);
   const setFiles = useWorkspace((s) => s.setFiles);
   const pending = useWorkspace((s) => s.files);
+  const openPalette = usePalette((s) => s.setOpen);
+  const recentIds = useRecents((s) => s.recent);
+  const favoriteIds = useRecents((s) => s.favorites);
+  const toggleFavorite = useRecents((s) => s.toggleFavorite);
+  const clearRecent = useRecents((s) => s.clearRecent);
   const navigate = useNavigate();
 
-  const tools = useMemo(() => searchTools(query), [query]);
   const suggestions = useMemo(() => toolsForFiles(pending), [pending]);
+  const recentTools = useMemo(
+    () => recentIds.map((id) => getTool(id)).filter(Boolean) as ToolDef[],
+    [recentIds],
+  );
+  const favoriteTools = useMemo(
+    () => favoriteIds.map((id) => getTool(id)).filter(Boolean) as ToolDef[],
+    [favoriteIds],
+  );
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  const filters: Filter[] = ["All", ...GROUPS];
+  const visible = filter === "All" ? TOOLS : TOOLS.filter((t) => t.group === filter);
 
   useEffect(() => {
     let depth = 0;
@@ -104,23 +121,26 @@ export function HomePage() {
           Zero uploads.
         </h1>
         <p className="rise-in rise-in-2 mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-muted-foreground sm:text-[19px]">
-          Merge, split, compress, convert, and scrub metadata entirely in your
-          browser. Nothing is sent to a server.
+          Merge, split, organize, watermark, convert, and scrub metadata entirely
+          in your browser. Nothing is sent to a server.
         </p>
 
         <div className="rise-in rise-in-3 relative mx-auto mt-8 max-w-md">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-subtle" />
-          <input
+          <button
             ref={searchRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tools"
+            type="button"
+            onClick={() => openPalette(true)}
             aria-label="Search tools"
-            className="h-12 w-full rounded-full bg-card pl-11 pr-16 text-[15px] text-foreground shadow-[var(--shadow-card)] outline-none placeholder:text-subtle focus-visible:shadow-[var(--shadow-card-hover)]"
-          />
-          <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md bg-fill px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground sm:inline">
-            Cmd+K
-          </kbd>
+            className="flex h-12 w-full items-center gap-3 rounded-full bg-card pl-4 pr-4 text-left shadow-[var(--shadow-card)] outline-none transition-shadow duration-150 hover:shadow-[var(--shadow-card-hover)]"
+          >
+            <Search className="size-4 shrink-0 text-subtle" />
+            <span className="flex-1 text-[15px] text-subtle">
+              Search {TOOLS.length} tools
+            </span>
+            <kbd className="hidden rounded-md bg-fill px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground sm:inline">
+              Cmd+K
+            </kbd>
+          </button>
         </div>
       </section>
 
@@ -168,28 +188,85 @@ export function HomePage() {
         </section>
       )}
 
-      <div className="rise-in rise-in-4 mt-14 space-y-12">
-        {GROUPS.map((group) => {
-          const items = tools.filter((t) => t.group === group);
-          if (!items.length) return null;
-          return (
-            <section key={group}>
-              <h2 className="mb-4 text-[13px] font-medium uppercase tracking-[0.14em] text-subtle">
-                {group}
-              </h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
-              </div>
-            </section>
-          );
-        })}
-        {tools.length === 0 && (
-          <p className="py-16 text-center text-muted-foreground">
-            No tools match that search.
-          </p>
-        )}
+      {(recentTools.length > 0 || favoriteTools.length > 0) && (
+        <div className="rise-in rise-in-4 mt-10 grid gap-6 sm:grid-cols-2">
+          {favoriteTools.length > 0 && (
+            <QuickRow
+              title="Favorites"
+              icon={Star}
+              tools={favoriteTools}
+            />
+          )}
+          {recentTools.length > 0 && (
+            <QuickRow
+              title="Recently used"
+              icon={Clock}
+              tools={recentTools}
+              action={{ label: "Clear", onClick: clearRecent }}
+            />
+          )}
+        </div>
+      )}
+
+      <div className="rise-in rise-in-4 mt-14">
+        <div className="mb-8 flex flex-wrap gap-2">
+          {filters.map((f) => {
+            const count =
+              f === "All" ? TOOLS.length : TOOLS.filter((t) => t.group === f).length;
+            return (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilter(f)}
+                className={cn(
+                  "inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150",
+                  filter === f
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground shadow-[var(--shadow-card)] hover:text-foreground",
+                )}
+              >
+                {f}
+                <span
+                  className={cn(
+                    "tabular-nums",
+                    filter === f ? "text-primary-foreground/70" : "text-subtle",
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="space-y-12">
+          {GROUPS.filter((g) => filter === "All" || filter === g).map((group) => {
+            const items = visible.filter((t) => t.group === group);
+            if (!items.length) return null;
+            return (
+              <section key={group}>
+                <div className="mb-4">
+                  <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-subtle">
+                    {group}
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {GROUP_BLURBS[group]}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map((tool) => (
+                    <ToolCard
+                      key={tool.id}
+                      tool={tool}
+                      favorite={favoriteIds.includes(tool.id)}
+                      onToggleFavorite={() => toggleFavorite(tool.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </div>
 
       <section className="mt-20 grid gap-4 sm:grid-cols-3">
@@ -213,31 +290,96 @@ export function HomePage() {
   );
 }
 
-function ToolCard({ tool }: { tool: ToolDef }) {
+function QuickRow({
+  title,
+  icon: Icon,
+  tools,
+  action,
+}: {
+  title: string;
+  icon: typeof Star;
+  tools: ToolDef[];
+  action?: { label: string; onClick: () => void };
+}) {
+  return (
+    <section>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.14em] text-subtle">
+          <Icon className="size-3.5" strokeWidth={2} />
+          {title}
+        </h2>
+        {action && (
+          <button
+            type="button"
+            onClick={action.onClick}
+            className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {action.label}
+          </button>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {tools.slice(0, 6).map((t) => (
+          <Link
+            key={t.id}
+            to={`/tools/${t.id}`}
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-3.5 text-sm font-medium text-foreground shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+          >
+            <t.icon className="size-3.5 text-muted-foreground" strokeWidth={1.75} />
+            {t.name}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ToolCard({
+  tool,
+  favorite,
+  onToggleFavorite,
+}: {
+  tool: ToolDef;
+  favorite: boolean;
+  onToggleFavorite: () => void;
+}) {
   const Icon = tool.icon;
   return (
     <Link
       to={`/tools/${tool.id}`}
       className={cn(
-        "group flex items-center gap-4 rounded-[22px] bg-card p-4 shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-smooth)]",
+        "group relative flex items-center gap-4 rounded-[22px] bg-card p-4 pr-12 shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-200 ease-[var(--ease-out-smooth)]",
         "hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]",
-        "sm:flex-col sm:items-start sm:p-5",
+        "sm:flex-col sm:items-start sm:p-5 sm:pr-12",
       )}
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-fill text-foreground transition-colors duration-150 group-hover:bg-primary-soft group-hover:text-primary sm:size-12">
         <Icon className="size-5" strokeWidth={1.7} />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
-            {tool.name}
-          </h3>
-          <ChevronRight className="size-4 shrink-0 text-subtle sm:hidden" />
-        </div>
+        <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
+          {tool.name}
+        </h3>
         <p className="mt-0.5 line-clamp-2 text-sm leading-snug text-muted-foreground">
           {tool.desc}
         </p>
       </div>
+      <button
+        type="button"
+        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+        aria-pressed={favorite}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onToggleFavorite();
+        }}
+        className={cn(
+          "absolute right-2.5 top-2.5 flex size-8 items-center justify-center rounded-full transition-colors duration-150 hover:bg-fill",
+          favorite ? "text-primary" : "text-subtle hover:text-foreground",
+        )}
+      >
+        <Star className={cn("size-4", favorite && "fill-current")} strokeWidth={1.75} />
+      </button>
     </Link>
   );
 }

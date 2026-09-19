@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { DropZone } from "@/components/kit/DropZone";
 import { Field } from "@/components/kit/Field";
 import { FileList } from "@/components/kit/FileList";
+import { ProgressNote } from "@/components/kit/ProgressNote";
 import { RunBar } from "@/components/kit/RunBar";
 import { StatusNote } from "@/components/kit/StatusNote";
 import { useIncomingFiles } from "@/components/kit/ToolFrame";
@@ -190,15 +191,18 @@ export function CompressPdf() {
   const [scale, setScale] = useState(1.5);
   const [log, setLog] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+    null,
+  );
   useIncomingFiles(tool.match, (incoming) => setFile(incoming[0] ?? null));
 
   const run = async () => {
     if (!file) return;
     setBusy(true);
-    setLog(["Rendering pages…"]);
+    setLog([]);
     try {
       const out = await compressPdf(file, quality, scale, (d, t) =>
-        setLog([`Rendering page ${d} of ${t}…`]),
+        setProgress({ done: d, total: t }),
       );
       const pct = ((1 - out.length / file.size) * 100).toFixed(0);
       downloadBlob(
@@ -214,6 +218,7 @@ export function CompressPdf() {
       setLog([`Error: ${(e as Error).message}`]);
     }
     setBusy(false);
+    setProgress(null);
   };
 
   return (
@@ -248,6 +253,7 @@ export function CompressPdf() {
           onValueChange={setScale}
         />
       </div>
+      {progress && <ProgressNote {...progress} label="Compressing pages" />}
       <RunBar onClick={run} disabled={!file} busy={busy} label="Compress PDF" />
       <StatusNote log={log} />
     </>
@@ -260,6 +266,9 @@ export function PdfToImages() {
   const [scale, setScale] = useState(2);
   const [log, setLog] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+    null,
+  );
   useIncomingFiles(tool.match, (incoming) => setFile(incoming[0] ?? null));
 
   const run = async () => {
@@ -268,7 +277,7 @@ export function PdfToImages() {
     setLog([]);
     try {
       const pages = await pdfToImages(file, scale, (d, t) =>
-        setLog([`Rendering page ${d} of ${t}…`]),
+        setProgress({ done: d, total: t }),
       );
       if (pages.length === 1 && pages[0]) {
         downloadBlob(pages[0].blob, `${baseName(file.name)}-p1.png`);
@@ -290,6 +299,7 @@ export function PdfToImages() {
       setLog([`Error: ${(e as Error).message}`]);
     }
     setBusy(false);
+    setProgress(null);
   };
 
   return (
@@ -311,6 +321,7 @@ export function PdfToImages() {
           onValueChange={setScale}
         />
       </div>
+      {progress && <ProgressNote {...progress} label="Rendering pages" />}
       <RunBar onClick={run} disabled={!file} busy={busy} label="Render to PNG" />
       <StatusNote log={log} />
     </>

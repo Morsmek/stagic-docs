@@ -1,3 +1,4 @@
+import { CommandPalette } from "@/components/layout/CommandPalette";
 import { Nav } from "@/components/layout/Nav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
@@ -7,6 +8,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Nav />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <CommandPalette />
     </div>
   );
 }

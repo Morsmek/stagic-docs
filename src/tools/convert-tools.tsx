@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { DropZone } from "@/components/kit/DropZone";
 import { Field } from "@/components/kit/Field";
 import { FileList } from "@/components/kit/FileList";
+import { ProgressNote } from "@/components/kit/ProgressNote";
 import { RunBar } from "@/components/kit/RunBar";
 import { StatusNote } from "@/components/kit/StatusNote";
 import { useIncomingFiles } from "@/components/kit/ToolFrame";
@@ -171,14 +172,19 @@ export function ImageConvert() {
   );
   const [log, setLog] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+    null,
+  );
   useIncomingFiles(tool.match, (incoming) => setFiles((p) => [...p, ...incoming]));
 
   const run = async () => {
     setBusy(true);
     setLog([]);
+    setProgress({ done: 0, total: files.length });
     const ext = TARGETS.find((t) => t.value === target)!.ext;
     const done: string[] = [];
-    for (const f of files) {
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i]!;
       try {
         const blob = await convertImage(f, target);
         downloadBlob(blob, `${baseName(f.name)}.${ext}`);
@@ -186,10 +192,12 @@ export function ImageConvert() {
       } catch (e) {
         done.push(`Error: ${f.name} — ${(e as Error).message}`);
       }
+      setProgress({ done: i + 1, total: files.length });
     }
     setLog(done);
     toast.success("Converted images saved");
     setBusy(false);
+    setProgress(null);
   };
 
   return (
@@ -211,6 +219,7 @@ export function ImageConvert() {
           options={TARGETS.map((t) => ({ value: t.value, label: t.label }))}
         />
       </Field>
+      {progress && <ProgressNote {...progress} label="Converting images" />}
       <RunBar
         onClick={run}
         disabled={!files.length}

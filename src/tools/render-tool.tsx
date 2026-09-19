@@ -1,5 +1,20 @@
 import type { ToolDef } from "@/lib/tools";
-import { CompressPdf, ImagesToPdf, MergePdf, PdfToImages, RotatePdf, SplitPdf } from "@/tools/pdf-tools";
+import { ImageResizer } from "@/tools/image-resize-tool";
+import { OrganizePdf } from "@/tools/organize-tool";
+import {
+  BurstPdf,
+  PageNumbersPdf,
+  PdfToText,
+  WatermarkPdf,
+} from "@/tools/pdf-extra-tools";
+import {
+  CompressPdf,
+  ImagesToPdf,
+  MergePdf,
+  PdfToImages,
+  RotatePdf,
+  SplitPdf,
+} from "@/tools/pdf-tools";
 import { ExifViewer, ImageScrubber, PdfMetadata } from "@/tools/privacy-tools";
 import { DocxToHtml, ImageConvert, TextMdToPdf } from "@/tools/convert-tools";
 
@@ -17,6 +32,14 @@ export function RenderTool({ tool }: { tool: ToolDef }) {
       return <PdfToImages />;
     case "img2pdf":
       return <ImagesToPdf />;
+    case "organize":
+      return <OrganizePdf />;
+    case "watermark":
+      return <WatermarkPdf />;
+    case "pagenums":
+      return <PageNumbersPdf />;
+    case "burst":
+      return <BurstPdf />;
     case "pdfmeta":
       return <PdfMetadata />;
     case "exif":
@@ -29,6 +52,10 @@ export function RenderTool({ tool }: { tool: ToolDef }) {
       return <TextMdToPdf />;
     case "imgconv":
       return <ImageConvert />;
+    case "pdf2txt":
+      return <PdfToText />;
+    case "imgsize":
+      return <ImageResizer />;
     default:
       return null;
   }
